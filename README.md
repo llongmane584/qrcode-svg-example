@@ -3,7 +3,7 @@
 Generating QR Code PNG and SVG image by using ZXing.
 
 ## Classes
-### App.java
+### App
 The main entry point of this example project.
 
 ### PrintQR
