@@ -13,8 +13,8 @@ Generate a PNG format QR Code image file.
 Generate an SVG format quasi QR Code image file.  
 This changes shapes (from square to circle) of finder patterns and cells of QR Code.  
 The original source code about the QR circle conversion was published by Curtis Yallop on 2020-01-28.  
-See also the article on Stack Overflow:  
-https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing
+See also the post on Stack Overflow:  
+[Generate QR codes with custom dot shapes using zxing](https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing)
 
 ## Usage
 Configure application.properties and run App.

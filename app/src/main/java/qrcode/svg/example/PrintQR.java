@@ -54,5 +54,7 @@ public class PrintQR {
         BitMatrix bm = qw.encode(content, BarcodeFormat.QR_CODE, canvasSize, canvasSize, hints);
         BufferedImage img = MatrixToImageWriter.toBufferedImage(bm);
         ImageIO.write(img, "png", new File(fileOutputPath + outputFileName));
+
+        
     }
 }
