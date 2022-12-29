@@ -60,7 +60,7 @@ public class PrintQRSVG {
         // generate SVG format QR Code (circle)
         svgText.append(renderSquareQRImage(code));
         svgText.append("</svg>");
-        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-circle.svg"), svgText);
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-square.svg"), svgText);
 
         svgText = new StringBuilder();
         svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
@@ -68,7 +68,7 @@ public class PrintQRSVG {
         // generate SVG format QR Code (square)
         svgText.append(renderCircleQRImage(code));
         svgText.append("</svg>");
-        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-square.svg"), svgText);
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-circle.svg"), svgText);
     }
 
     /**
