@@ -17,8 +17,8 @@ See also the article on Stack Overflow:
 https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing
 
 ## Usage
-Run App.java.
+Configure application.properties and run App.
 
 ## Requirements
 ZXing, Java >= 17.
-About the QR Code, please read [QR code.com articles](https://www.qrcode.com/en/index.html).
+About the QR Code, please read [QR code.com articles](https://www.qrcode.com/en/index.html) as well.
