@@ -16,6 +16,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
  * Write QR Code as an SVG format text file (.svg).
  */
 public class PrintQRSVG {
+    // this output is optimised to 600 (actually, this is an excuse, though :))
     private static final int CANVAS_SIZE = 600;
 
     private final String content;
@@ -27,7 +28,7 @@ public class PrintQRSVG {
     private final String offColour;
     private final int finderPatternSize;
     private final int quietZoneSize;
-    
+
     /**
      * Get QR Code specs from application.properties.
      */
@@ -216,7 +217,7 @@ public class PrintQRSVG {
 
         int multiple = outputSize / qrSize;
         int padding = (outputSize - (qrMatrixSize * multiple)) / 2;
-        
+
         int sideSize = Math.round(multiple * shapeSizeRatio);
 
         StringBuilder cells = new StringBuilder();
@@ -249,7 +250,7 @@ public class PrintQRSVG {
         // top-right
         x = padding + renderingArea - squareSideSize;
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
-        
+
         // bottom-left
         x = padding;
         y = padding + renderingArea - squareSideSize;
@@ -257,7 +258,7 @@ public class PrintQRSVG {
 
         qrSvg.append(finderPatterns);
         qrSvg.append(System.lineSeparator());
-        
+
         return qrSvg;
     }
 
