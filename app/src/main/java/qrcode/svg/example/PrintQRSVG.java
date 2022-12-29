@@ -16,14 +16,15 @@ import com.google.zxing.qrcode.encoder.QRCode;
  * Write QR Code as an SVG format text file (.svg).
  */
 public class PrintQRSVG {
+    private static final int CANVAS_SIZE = 600;
+
     private final String content;
     private final int qrCodeVersion;
     private ErrorCorrectionLevel qrCodErrorCorrectionLevel;
-    private final float circleDiameterRatio;
+    private final float shapeSizeRatio;
     private final String fileOutputPath;
     private final String onColour;
     private final String offColour;
-    private final int canvasSize;
     private final int finderPatternSize;
     private final int quietZoneSize;
     private final String fileName;
@@ -37,16 +38,16 @@ public class PrintQRSVG {
         this.content = props.getString("qrcode.content");
         this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
         this.qrCodErrorCorrectionLevel = ErrorCorrectionLevel.valueOf(props.getString("qrcode.errorCorrectionLevel"));
-        this.circleDiameterRatio = Float.parseFloat(props.getString("qrcode.circleDiameterRatio"));
+        this.shapeSizeRatio = Float.parseFloat(props.getString("qrcode.shapeSizeRatio"));
         this.fileOutputPath = props.getString("qrcode.fileOutputPath");
         this.onColour = props.getString("qrcode.onColour");
         this.offColour = props.getString("qrcode.offColour");
-        this.canvasSize = Integer.parseInt(props.getString("qrcode.canvasSize"));
+        //this.canvasSize = Integer.parseInt(props.getString("qrcode.canvasSize"));
         this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
         this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
         this.cellShape = props.getString("qrcode.cellShape");
 
-        this.fileName = qrCodeVersion + "-" + canvasSize + ".svg";
+        this.fileName = qrCodeVersion + "-" + CANVAS_SIZE + "-" + cellShape + ".svg";
     }
 
     /**
@@ -64,9 +65,9 @@ public class PrintQRSVG {
         svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
 
         if(cellShape.equals("rect")) {
-            svgText.append(renderSquareQRImage(code, canvasSize, quietZoneSize, circleDiameterRatio));
+            svgText.append(renderSquareQRImage(code));
         } else {
-            svgText.append(renderCircleQRImage(code, canvasSize, quietZoneSize, circleDiameterRatio));
+            svgText.append(renderCircleQRImage(code));
         }
         
         
@@ -81,19 +82,15 @@ public class PrintQRSVG {
      * Original source is published by Curtis Yallop in Stack Overflow.
      * Title: "Generate QR codes with custom dot shapes using zxing"
      * https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing
-     *
      * @param code source QR Code
-     * @param canvasSize SVG canvas size (width = height)
-     * @param quietZone QR Code quiet zone (mergin)
-     * @param circleDiameterRatio ratio of dot diameter to cell width
      * @return dot converted SVG format QR Code text
      */
-    private StringBuilder renderCircleQRImage(QRCode code, int canvasSize, int quietZone, float circleDiameterRatio) {
+    private StringBuilder renderCircleQRImage(QRCode code) {
 
         final String DOT = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
+        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(CANVAS_SIZE) + "' height='" + String.valueOf(CANVAS_SIZE) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
         qrSvg.append(System.lineSeparator());
 
         ByteMatrix qrByteMatrix = code.getMatrix();
@@ -102,13 +99,13 @@ public class PrintQRSVG {
         }
 
         int qrMatrixSize = qrByteMatrix.getHeight();
-        int qrSize = qrMatrixSize + (quietZone * 2);
-        int outputSize = Math.max(canvasSize, qrSize);
+        int qrSize = qrMatrixSize + (quietZoneSize);
+        int outputSize = Math.max(CANVAS_SIZE, qrSize);
 
-        int multiple = outputSize / qrSize;
-        int padding = (outputSize - (qrMatrixSize * multiple)) / 2;
+        int multiple = Math.round(outputSize / qrSize);
+        int padding = Math.round((outputSize - (qrMatrixSize * multiple)) / 2);
         
-        int circleRadius = Math.round(multiple * circleDiameterRatio / 2);
+        int circleRadius = Math.round(multiple * shapeSizeRatio / 2);
 
         StringBuilder dots = new StringBuilder();
         for (int inputY = 0, outputY = padding; inputY < qrMatrixSize; inputY++, outputY += multiple) {
@@ -118,8 +115,8 @@ public class PrintQRSVG {
                         inputX >= qrMatrixSize - finderPatternSize && inputY <= finderPatternSize ||
                         inputX <= finderPatternSize && inputY >= qrMatrixSize - finderPatternSize)) {
                             dots.append(DOT
-                                .replace("$x", String.valueOf(outputX))
-                                .replace("$y", String.valueOf(outputY))
+                                .replace("$x", String.valueOf(outputX + quietZoneSize * 1.7))
+                                .replace("$y", String.valueOf(outputY + quietZoneSize * 1.7))
                                 .replace("$r", String.valueOf(circleRadius)));
                             dots.append(System.lineSeparator());
                     }
@@ -131,19 +128,26 @@ public class PrintQRSVG {
         // draw finder pattern circles (circle + dot)
         int circleDiameter = Math.round(multiple * finderPatternSize);
         // top-left
-        int renderingArea = canvasSize - padding * 2;
-        int x = Math.round((padding + circleDiameter / 2) / 10) * 10;
-        int y = Math.round((padding + circleDiameter / 2) / 10) * 10;
+        int renderingArea = CANVAS_SIZE - padding * 2;
+        //int x = Math.round((padding + circleDiameter / 2) / 10) * 10;
+        //int y = Math.round((padding + circleDiameter / 2) / 10) * 10;
+        int x = Math.round(padding + circleDiameter / 2);
+        int y = Math.round(padding + circleDiameter / 2);
+
+
         StringBuilder finderPatterns = new StringBuilder();        
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
 
         // top-right
-        x = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
+        //x = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
+        x = Math.round(padding + renderingArea - circleDiameter / 2);
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
         
         // bottom-left
-        x = Math.round((padding + circleDiameter / 2) / 10) * 10;
-        y = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
+        //x = Math.round((padding + circleDiameter / 2) / 10) * 10;
+        //y = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
+        x = Math.round(padding + circleDiameter / 2);
+        y = Math.round(padding + renderingArea - circleDiameter / 2);
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
 
         qrSvg.append(finderPatterns);
@@ -193,13 +197,22 @@ public class PrintQRSVG {
         return finderPatterns;
     }
 
-
-    private StringBuilder renderSquareQRImage(QRCode code, int canvasSize, int quietZone, float circleDiameterRatio) {
+    /**
+     * Convert QR Code squares to squares, then generate SVG text of QR Code.
+     * 
+     * Original source is published by Curtis Yallop in Stack Overflow.
+     * Title: "Generate QR codes with custom dot shapes using zxing"
+     * https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing
+     *
+     * @param code source QR Code
+     * @return dot converted SVG format QR Code text
+     */
+    private StringBuilder renderSquareQRImage(QRCode code) {
 
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
+        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(CANVAS_SIZE) + "' height='" + String.valueOf(CANVAS_SIZE) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
         qrSvg.append(System.lineSeparator());
 
         ByteMatrix qrByteMatrix = code.getMatrix();
@@ -208,13 +221,13 @@ public class PrintQRSVG {
         }
 
         int qrMatrixSize = qrByteMatrix.getHeight();
-        int qrSize = qrMatrixSize + (quietZone * 2);
-        int outputSize = Math.max(canvasSize, qrSize);
+        int qrSize = qrMatrixSize + (quietZoneSize);
+        int outputSize = Math.max(CANVAS_SIZE, qrSize);
 
         int multiple = outputSize / qrSize;
         int padding = (outputSize - (qrMatrixSize * multiple)) / 2;
         
-        int sideSize = Math.round(multiple * circleDiameterRatio);
+        int sideSize = Math.round(multiple * shapeSizeRatio);
 
         StringBuilder cells = new StringBuilder();
         for (int inputY = 0, outputY = padding; inputY < qrMatrixSize; inputY++, outputY += multiple) {
@@ -237,19 +250,19 @@ public class PrintQRSVG {
         // draw finder pattern squares
         int squareSideSize = Math.round(multiple * finderPatternSize);
         // top-left
-        int renderingArea = canvasSize - padding * 2;
+        int renderingArea = CANVAS_SIZE - padding * 2;
         int x = padding; //Math.round((squareSideSize / 2) / 10) * 10;
         int y = padding; //Math.round((squareSideSize / 2) / 10) * 10;
         StringBuilder finderPatterns = new StringBuilder();
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
 
         // top-right
-        x = Math.round((padding + renderingArea - squareSideSize) / 10) * 10;
+        x = Math.round(padding + renderingArea - squareSideSize); //Math.round((padding + renderingArea - squareSideSize) / 10) * 10;
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
         
         // bottom-left
         x = padding;//Math.round((padding + squareSideSize) / 10) * 10;
-        y = Math.round((padding + renderingArea - squareSideSize) / 10) * 10;
+        y = Math.round(padding + renderingArea - squareSideSize);
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
 
         qrSvg.append(finderPatterns);
@@ -258,7 +271,17 @@ public class PrintQRSVG {
         return qrSvg;
     }
 
-
+    /**
+     * draw QR Code Finder Patterns
+     * 
+     * Original source is published by Curtis Yallop in Stack Overflow.
+     * Title: "Generate QR codes with custom dot shapes using zxing"
+     * https://stackoverflow.com/questions/35419511/generate-qr-codes-with-custom-dot-shapes-using-zxing
+     * @param x
+     * @param y
+     * @param sideSize
+     * @return
+     */
     private StringBuilder drawFinderPatternSquareStyle(int x, int y, int sideSize) {
         final int finderMiddleSquareWidth = sideSize * 5 / finderPatternSize;
         final int finderInnerSquareWidth = sideSize * 3 / finderPatternSize;
