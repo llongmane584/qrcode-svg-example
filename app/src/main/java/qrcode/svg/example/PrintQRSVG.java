@@ -27,8 +27,6 @@ public class PrintQRSVG {
     private final String offColour;
     private final int finderPatternSize;
     private final int quietZoneSize;
-    private final String fileName;
-    private final String cellShape;
     
     /**
      * Get QR Code specs from application.properties.
@@ -42,12 +40,8 @@ public class PrintQRSVG {
         this.fileOutputPath = props.getString("qrcode.fileOutputPath");
         this.onColour = props.getString("qrcode.onColour");
         this.offColour = props.getString("qrcode.offColour");
-        //this.canvasSize = Integer.parseInt(props.getString("qrcode.canvasSize"));
         this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
         this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
-        this.cellShape = props.getString("qrcode.cellShape");
-
-        this.fileName = qrCodeVersion + "-" + CANVAS_SIZE + "-" + cellShape + ".svg";
     }
 
     /**
@@ -63,17 +57,18 @@ public class PrintQRSVG {
         StringBuilder svgText = new StringBuilder();
         svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
         svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
-
-        if(cellShape.equals("rect")) {
-            svgText.append(renderSquareQRImage(code));
-        } else {
-            svgText.append(renderCircleQRImage(code));
-        }
-        
-        
+        // generate SVG format QR Code (circle)
+        svgText.append(renderSquareQRImage(code));
         svgText.append("</svg>");
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-circle.svg"), svgText);
 
-        Files.writeString(Paths.get(fileOutputPath + fileName), svgText);
+        svgText = new StringBuilder();
+        svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
+        svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
+        // generate SVG format QR Code (square)
+        svgText.append(renderCircleQRImage(code));
+        svgText.append("</svg>");
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-square.svg"), svgText);
     }
 
     /**
@@ -129,8 +124,6 @@ public class PrintQRSVG {
         int circleDiameter = Math.round(multiple * finderPatternSize);
         // top-left
         int renderingArea = CANVAS_SIZE - padding * 2;
-        //int x = Math.round((padding + circleDiameter / 2) / 10) * 10;
-        //int y = Math.round((padding + circleDiameter / 2) / 10) * 10;
         int x = Math.round(padding + circleDiameter / 2);
         int y = Math.round(padding + circleDiameter / 2);
 
@@ -139,13 +132,10 @@ public class PrintQRSVG {
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
 
         // top-right
-        //x = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
         x = Math.round(padding + renderingArea - circleDiameter / 2);
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
         
         // bottom-left
-        //x = Math.round((padding + circleDiameter / 2) / 10) * 10;
-        //y = Math.round((padding + renderingArea - circleDiameter / 2) / 10) * 10;
         x = Math.round(padding + circleDiameter / 2);
         y = Math.round(padding + renderingArea - circleDiameter / 2);
         finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
@@ -248,21 +238,21 @@ public class PrintQRSVG {
         qrSvg.append(cells);
 
         // draw finder pattern squares
-        int squareSideSize = Math.round(multiple * finderPatternSize);
+        int squareSideSize = multiple * finderPatternSize;
         // top-left
         int renderingArea = CANVAS_SIZE - padding * 2;
-        int x = padding; //Math.round((squareSideSize / 2) / 10) * 10;
-        int y = padding; //Math.round((squareSideSize / 2) / 10) * 10;
+        int x = padding;
+        int y = padding;
         StringBuilder finderPatterns = new StringBuilder();
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
 
         // top-right
-        x = Math.round(padding + renderingArea - squareSideSize); //Math.round((padding + renderingArea - squareSideSize) / 10) * 10;
+        x = padding + renderingArea - squareSideSize;
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
         
         // bottom-left
-        x = padding;//Math.round((padding + squareSideSize) / 10) * 10;
-        y = Math.round(padding + renderingArea - squareSideSize);
+        x = padding;
+        y = padding + renderingArea - squareSideSize;
         finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
 
         qrSvg.append(finderPatterns);
@@ -311,5 +301,4 @@ public class PrintQRSVG {
 
         return finderPatterns;
     }
-
 }
