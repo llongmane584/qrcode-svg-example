@@ -18,7 +18,7 @@ public class PrintQRSVGCircle extends PrintQRSVG {
         final String CELL = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         int padding = quietZoneSize * scaling;
-        int canvasSize = (QR_SIZE_BASE + (qrCodeVersion - 1) * 4) * scaling + padding * 2;
+        int canvasSize = (qrCodeSize) * scaling + padding * 2;
         // fine adjustment for circle QR code rendering
         padding *= 1.1;
 

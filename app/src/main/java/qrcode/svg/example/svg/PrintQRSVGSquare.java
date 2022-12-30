@@ -18,7 +18,7 @@ public class PrintQRSVGSquare extends PrintQRSVG {
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         int padding = quietZoneSize * scaling;
-        int canvasSize = (QR_SIZE_BASE + (qrCodeVersion - 1) * 4) * scaling + padding * 2;
+        int canvasSize = (qrCodeSize) * scaling + padding * 2;
 
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
