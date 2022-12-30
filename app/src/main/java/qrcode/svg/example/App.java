@@ -4,7 +4,6 @@
 package qrcode.svg.example;
 
 import qrcode.svg.example.svg.PrintQRSVGCircle;
-import qrcode.svg.example.svg.PrintQRSVGCircle2;
 import qrcode.svg.example.svg.PrintQRSVGSquare;
 
 public class App {
@@ -17,7 +16,6 @@ public class App {
             new PrintQRSVGSquare().write();
             // generate an SVG format QR Code file (circle)
             new PrintQRSVGCircle().write();
-            new PrintQRSVGCircle2().write();
         } catch(Exception e) {
             e.printStackTrace();
         }

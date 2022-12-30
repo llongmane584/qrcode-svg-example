@@ -19,6 +19,8 @@ public class PrintQRSVGCircle extends PrintQRSVG {
 
         int padding = quietZoneSize * scaling;
         int canvasSize = (QR_SIZE_BASE + (qrCodeVersion - 1) * 4) * scaling + padding * 2;
+        // fine adjustment for circle QR code rendering
+        padding *= 1.1;
 
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
@@ -64,8 +66,9 @@ public class PrintQRSVGCircle extends PrintQRSVG {
                             .replace("$x", String.valueOf(x * scaling + padding))
                             .replace("$y", String.valueOf(y * scaling + padding))
                             .replace("$r", String.valueOf(fillSize)));
+                        cells.append("\n");
                     }
-                    cells.append("\n");
+                    
                 }
             }
         }
