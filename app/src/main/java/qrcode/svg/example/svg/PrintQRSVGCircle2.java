@@ -6,7 +6,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGCircle extends PrintQRSVG {
+public class PrintQRSVGCircle2 extends PrintQRSVG {
     /**
      * Convert QR Code squares to squares, then generate SVG text of QR Code.
      * 
