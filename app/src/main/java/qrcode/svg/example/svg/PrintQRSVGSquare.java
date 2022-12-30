@@ -18,8 +18,6 @@ public class PrintQRSVGSquare extends PrintQRSVG {
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         int padding = quietZoneSize * scaling;
-        int canvasSize = (qrCodeSize) * scaling + padding * 2;
-
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
             throw new IllegalStateException();
@@ -77,9 +75,6 @@ public class PrintQRSVGSquare extends PrintQRSVG {
             }
         }
 
-        StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
-        qrSvg.append("\n");
-        return qrSvg.append(cells);
+        return cells;
     }
 }

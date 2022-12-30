@@ -64,7 +64,11 @@ public abstract class PrintQRSVG {
         StringBuilder svgText = new StringBuilder();
         svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
         svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
-        // generate SVG format QR Code (square)
+        // draw SVG canvas
+        int canvasSize = qrCodeSize * scaling + quietZoneSize * scaling * 2;
+        svgText.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
+        svgText.append("\n");
+        // draw QR Code content
         svgText.append(renderQRImage(code));
         svgText.append("</svg>");
         Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + "x" + String.valueOf(scaling) + "-" + fillShape + ".svg"), svgText);

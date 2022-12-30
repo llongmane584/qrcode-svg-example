@@ -18,7 +18,6 @@ public class PrintQRSVGCircle extends PrintQRSVG {
         final String CELL = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
         int padding = quietZoneSize * scaling;
-        int canvasSize = (qrCodeSize) * scaling + padding * 2;
         // fine adjustment for circle QR code rendering
         padding *= 1.1;
 
@@ -73,8 +72,6 @@ public class PrintQRSVGCircle extends PrintQRSVG {
         }
 
         StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
-        qrSvg.append("\n");
         qrSvg.append(drawFinderPattern(padding + (finderLeftTopXFrom + 3) * scaling, padding + (finderLeftTopYFrom + 3) * scaling));
         qrSvg.append(drawFinderPattern(padding + (finderRightTopXFrom + 3) * scaling, padding + (finderRightTopYFrom + 3) * scaling));
         qrSvg.append(drawFinderPattern(padding + (finderLeftBottomXFrom + 3) * scaling, padding + (finderLeftBottomYFrom + 3) * scaling));
