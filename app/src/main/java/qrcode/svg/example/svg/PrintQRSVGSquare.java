@@ -49,7 +49,7 @@ public class PrintQRSVGSquare extends PrintQRSVG {
             for(int x=0; x<qrMatrixSize; ++x) {
                 // fill a cell when the cell colour is on
                 if(qrByteMatrix.get(x, y) == 1) {
-                    // finder pattern cells
+                    // finder pattern cells (for preventing read error)
                     if(
                         ((y >= finderLeftTopYFrom && y <= finderLeftTopYTo)
                         && (x >= finderLeftTopXFrom && x <= finderLeftTopXTo))
