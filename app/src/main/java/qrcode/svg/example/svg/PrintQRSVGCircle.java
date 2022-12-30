@@ -24,7 +24,7 @@ public class PrintQRSVGCircle extends PrintQRSVG{
 
         StringBuilder qrSvg = new StringBuilder();
         qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(CANVAS_SIZE) + "' height='" + String.valueOf(CANVAS_SIZE) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
-        qrSvg.append(System.lineSeparator());
+        qrSvg.append("\n");
 
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
@@ -44,14 +44,14 @@ public class PrintQRSVGCircle extends PrintQRSVG{
         for (int inputY = 0, outputY = padding; inputY < qrMatrixSize; inputY++, outputY += multiple) {
             for (int inputX = 0, outputX = padding; inputX < qrMatrixSize; inputX++, outputX += multiple) {
                 if (qrByteMatrix.get(inputX, inputY) == 1) {
-                    if (!(inputX <= finderPatternSize && inputY <= finderPatternSize ||
-                        inputX >= qrMatrixSize - finderPatternSize && inputY <= finderPatternSize ||
-                        inputX <= finderPatternSize && inputY >= qrMatrixSize - finderPatternSize)) {
+                    if (!(inputX <= FINDER_PATTERN_SIZE && inputY <= FINDER_PATTERN_SIZE ||
+                        inputX >= qrMatrixSize - FINDER_PATTERN_SIZE && inputY <= FINDER_PATTERN_SIZE ||
+                        inputX <= FINDER_PATTERN_SIZE && inputY >= qrMatrixSize - FINDER_PATTERN_SIZE)) {
                             dots.append(DOT
                                 .replace("$x", String.valueOf(outputX + quietZoneSize * 1.7))
                                 .replace("$y", String.valueOf(outputY + quietZoneSize * 1.7))
                                 .replace("$r", String.valueOf(circleRadius)));
-                            dots.append(System.lineSeparator());
+                            dots.append("\n");
                     }
                 }
             }
@@ -59,7 +59,7 @@ public class PrintQRSVGCircle extends PrintQRSVG{
         qrSvg.append(dots);
 
         // draw finder pattern circles (circle + dot)
-        int circleDiameter = Math.round(multiple * finderPatternSize);
+        int circleDiameter = Math.round(multiple * FINDER_PATTERN_SIZE);
         // top-left
         int renderingArea = CANVAS_SIZE - padding * 2;
         int x = Math.round(padding + circleDiameter / 2);
@@ -78,7 +78,7 @@ public class PrintQRSVGCircle extends PrintQRSVG{
         finderPatterns.append(drawFinderPattern(x, y, circleDiameter));
 
         qrSvg.append(finderPatterns);
-        qrSvg.append(System.lineSeparator());
+        qrSvg.append("\n");
         
         return qrSvg;
     }
@@ -95,8 +95,8 @@ public class PrintQRSVGCircle extends PrintQRSVG{
      * @return
      */
     private StringBuilder drawFinderPattern(int x, int y, int circleDiameter) {
-        final int finderInnerCircleDiameter = circleDiameter * 5 / finderPatternSize;
-        final int finderDotDiameter = circleDiameter * 3 / finderPatternSize;
+        final int finderInnerCircleDiameter = circleDiameter * 5 / FINDER_PATTERN_SIZE;
+        final int finderDotDiameter = circleDiameter * 3 / FINDER_PATTERN_SIZE;
         final String OUTER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + onColour + ")' />";
         final String INNER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + offColour + ")' />";
         final String DOT = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + onColour + ")' />";
@@ -106,19 +106,19 @@ public class PrintQRSVGCircle extends PrintQRSVG{
         finderPatterns.append(OUTER_CIRCLE
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(circleDiameter / 2)) + System.lineSeparator()
+            .replace("$r", String.valueOf(circleDiameter / 2)) + "\n"
             );
         // draw inner circle
         finderPatterns.append(INNER_CIRCLE
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(finderInnerCircleDiameter / 2)) + System.lineSeparator()
+            .replace("$r", String.valueOf(finderInnerCircleDiameter / 2)) + "\n"
             );
         // draw dot
         finderPatterns.append(DOT
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(finderDotDiameter / 2)) + System.lineSeparator()
+            .replace("$r", String.valueOf(finderDotDiameter / 2)) + "\n"
             );
 
         return finderPatterns;

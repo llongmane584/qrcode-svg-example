@@ -6,25 +6,25 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGSquare extends PrintQRSVG {
-    /**
-     * Convert QR Code squares to squares, then generate SVG text of QR Code.
-     * 
-     * @param code source QR Code
-     * @return dot converted SVG format QR Code text
-     */
+public class PrintQRSVGSquare2 extends PrintQRSVG {
+
     @Override
     public StringBuilder renderQRImage(QRCode code) {
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
-        
+        StringBuilder qrSvg = new StringBuilder();
         int padding = quietZoneSize * scaling;
         int canvasSize = (21 + (qrCodeVersion - 1) * 4) * scaling + padding * 2;
+        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
+        qrSvg.append("\n");
 
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
             throw new IllegalStateException();
         }
+
+        int qrMatrixSize = qrByteMatrix.getWidth();
+        StringBuilder cells = new StringBuilder();
 
         // finder pattern position
         // Left-Top
@@ -44,8 +44,6 @@ public class PrintQRSVGSquare extends PrintQRSVG {
         int finderLeftBottomYTo = qrCodeSize - 1;
 
         int fillSize = Math.round(scaling * shapeSizeRatio);
-        StringBuilder cells = new StringBuilder();
-        int qrMatrixSize = qrByteMatrix.getWidth();
         for(int y=0; y<qrMatrixSize; ++y) {
             for(int x=0; x<qrMatrixSize; ++x) {
                 // fill a cell when the cell colour is on
@@ -77,10 +75,11 @@ public class PrintQRSVGSquare extends PrintQRSVG {
                 }
             }
         }
-
-        StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
-        qrSvg.append("\n");
-        return qrSvg.append(cells);
+        qrSvg.append(cells);
+        System.out.println(qrSvg.toString());
+        return qrSvg;
     }
+
+
 }
+

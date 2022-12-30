@@ -17,6 +17,8 @@ import com.google.zxing.qrcode.encoder.QRCode;
 public abstract class PrintQRSVG {
     // this output is optimised to 600 (actually, this is an excuse, though :))
     protected static final int CANVAS_SIZE = 600;
+    protected static final int FINDER_PATTERN_SIZE = 7; //finderPatternSize = 7;
+    protected static final int QR_SIZE_BASE = 21;
 
     protected final String content;
     protected final int qrCodeVersion;
@@ -25,9 +27,10 @@ public abstract class PrintQRSVG {
     protected final String fileOutputPath;
     protected final String onColour;
     protected final String offColour;
-    protected final int finderPatternSize;
     protected final int quietZoneSize;
     protected final String fillShape;
+    protected final int scaling;
+    protected final int qrCodeSize;
     
     /**
      * Get QR Code specs from application.properties.
@@ -41,8 +44,10 @@ public abstract class PrintQRSVG {
         this.fileOutputPath = props.getString("qrcode.fileOutputPath");
         this.onColour = props.getString("qrcode.onColour");
         this.offColour = props.getString("qrcode.offColour");
-        this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
         this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
+
+        this.scaling = Integer.parseInt(props.getString("qrcode.scaling"));
+        this.qrCodeSize = QR_SIZE_BASE + (qrCodeVersion - 1) * 4;
 
         // initialise suffix of output file name from subclass fuffix (PrintQRSVGCircle -> circle, PrintQRSVGSquare -> square)
         this.fillShape = getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
