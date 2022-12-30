@@ -22,3 +22,10 @@ Configure application.properties and run App.
 ## Requirements
 ZXing, Java >= 17.
 About the QR Code, please read [QR code.com articles](https://www.qrcode.com/en/index.html) as well.
+
+## Example images
+### version:4, error correction level:H, x3 scaling, square shape cell
+![4-x3-square](https://user-images.githubusercontent.com/46396892/210091447-2ee8c7b7-36fe-418b-ba32-d225d5e7cdb7.svg)
+### version:4, error correction level:H, x3 scaling, circle shape cell
+![4-x3-circle](https://user-images.githubusercontent.com/46396892/210091406-4a697ca6-2315-4cf1-826e-8adab7001e29.svg)
+
