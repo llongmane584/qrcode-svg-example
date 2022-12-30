@@ -3,6 +3,9 @@
  */
 package qrcode.svg.example;
 
+import qrcode.svg.example.svg.PrintQRSVGCircle;
+import qrcode.svg.example.svg.PrintQRSVGSquare;
+
 public class App {
 
     public static void main(String[] args) {

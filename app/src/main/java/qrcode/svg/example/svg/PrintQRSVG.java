@@ -1,4 +1,4 @@
-package qrcode.svg.example;
+package qrcode.svg.example.svg;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.QRCode;
@@ -15,7 +14,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVG {
+abstract class PrintQRSVG {
     // this output is optimised to 600 (actually, this is an excuse, though :))
     protected static final int CANVAS_SIZE = 600;
 
@@ -28,11 +27,12 @@ public class PrintQRSVG {
     protected final String offColour;
     protected final int finderPatternSize;
     protected final int quietZoneSize;
-
+    protected final String fillShape;
+    
     /**
      * Get QR Code specs from application.properties.
      */
-    public PrintQRSVG() {
+    protected PrintQRSVG() {
         ResourceBundle props = ResourceBundle.getBundle("application");
         this.content = props.getString("qrcode.content");
         this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
@@ -43,13 +43,15 @@ public class PrintQRSVG {
         this.offColour = props.getString("qrcode.offColour");
         this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
         this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
+
+        // initialise suffix of output file name from subclass fuffix
+        this.fillShape = getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
     }
 
     /**
      * Generate an SVG format QR Code file.
      * @throws Exception
      */
-    /*
     public void write() throws Exception {
         final ConcurrentHashMap<EncodeHintType, Object> hints = new ConcurrentHashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.name());
@@ -62,6 +64,8 @@ public class PrintQRSVG {
         // generate SVG format QR Code (square)
         svgText.append(renderQRImage(code));
         svgText.append("</svg>");
-        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-circle.svg"), svgText);
-    } */
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-" + fillShape + ".svg"), svgText);
+    }
+
+    protected abstract StringBuilder renderQRImage(QRCode code);
 }

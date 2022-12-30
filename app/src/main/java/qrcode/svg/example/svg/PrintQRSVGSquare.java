@@ -1,38 +1,12 @@
-package qrcode.svg.example;
+package qrcode.svg.example.svg;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
-import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
 public class PrintQRSVGSquare extends PrintQRSVG {
-    /**
-     * Generate an SVG format QR Code file.
-     * @throws Exception
-     */
-    public void write() throws Exception {
-        final ConcurrentHashMap<EncodeHintType, Object> hints = new ConcurrentHashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.name());
-        hints.put(EncodeHintType.QR_VERSION, qrCodeVersion);
-        QRCode code = Encoder.encode(content, qrCodErrorCorrectionLevel, hints);
-
-        StringBuilder svgText = new StringBuilder();
-        svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
-        svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
-        // generate SVG format QR Code (sqare)
-        svgText.append(renderQRImage(code));
-        svgText.append("</svg>");
-        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-square.svg"), svgText);
-    }
-
     /**
      * Convert QR Code squares to squares, then generate SVG text of QR Code.
      * 
@@ -43,7 +17,7 @@ public class PrintQRSVGSquare extends PrintQRSVG {
      * @param code source QR Code
      * @return dot converted SVG format QR Code text
      */
-    private StringBuilder renderQRImage(QRCode code) {
+    protected StringBuilder renderQRImage(QRCode code) {
 
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
