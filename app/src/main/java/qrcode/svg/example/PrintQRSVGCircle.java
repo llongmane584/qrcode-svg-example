@@ -3,48 +3,17 @@ package qrcode.svg.example;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.QRCode;
 
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGCircle {
-    // this output is optimised to 600 (actually, this is an excuse, though :))
-    private static final int CANVAS_SIZE = 600;
-
-    private final String content;
-    private final int qrCodeVersion;
-    private ErrorCorrectionLevel qrCodErrorCorrectionLevel;
-    private final float shapeSizeRatio;
-    private final String fileOutputPath;
-    private final String onColour;
-    private final String offColour;
-    private final int finderPatternSize;
-    private final int quietZoneSize;
-
-    /**
-     * Get QR Code specs from application.properties.
-     */
-    public PrintQRSVGCircle() {
-        ResourceBundle props = ResourceBundle.getBundle("application");
-        this.content = props.getString("qrcode.content");
-        this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
-        this.qrCodErrorCorrectionLevel = ErrorCorrectionLevel.valueOf(props.getString("qrcode.errorCorrectionLevel"));
-        this.shapeSizeRatio = Float.parseFloat(props.getString("qrcode.shapeSizeRatio"));
-        this.fileOutputPath = props.getString("qrcode.fileOutputPath");
-        this.onColour = props.getString("qrcode.onColour");
-        this.offColour = props.getString("qrcode.offColour");
-        this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
-        this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
-    }
-
+public class PrintQRSVGCircle extends PrintQRSVG{
     /**
      * Generate an SVG format QR Code file.
      * @throws Exception
@@ -59,7 +28,7 @@ public class PrintQRSVGCircle {
         svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
         svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
         // generate SVG format QR Code (square)
-        svgText.append(renderCircleQRImage(code));
+        svgText.append(renderQRImage(code));
         svgText.append("</svg>");
         Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-circle.svg"), svgText);
     }
@@ -74,7 +43,7 @@ public class PrintQRSVGCircle {
      *  @param code source QR Code
      * @return dot converted SVG format QR Code text
      */
-    private StringBuilder renderCircleQRImage(QRCode code) {
+    private StringBuilder renderQRImage(QRCode code) {
 
         final String DOT = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
@@ -122,16 +91,16 @@ public class PrintQRSVGCircle {
         int y = Math.round(padding + circleDiameter / 2);
 
         StringBuilder finderPatterns = new StringBuilder();        
-        finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
+        finderPatterns.append(drawFinderPattern(x, y, circleDiameter));
 
         // top-right
         x = Math.round(padding + renderingArea - circleDiameter / 2);
-        finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
+        finderPatterns.append(drawFinderPattern(x, y, circleDiameter));
         
         // bottom-left
         x = Math.round(padding + circleDiameter / 2);
         y = Math.round(padding + renderingArea - circleDiameter / 2);
-        finderPatterns.append(drawFinderPatternCircleStyle(x, y, circleDiameter));
+        finderPatterns.append(drawFinderPattern(x, y, circleDiameter));
 
         qrSvg.append(finderPatterns);
         qrSvg.append(System.lineSeparator());
@@ -150,7 +119,7 @@ public class PrintQRSVGCircle {
      * @param circleDiameter
      * @return
      */
-    private StringBuilder drawFinderPatternCircleStyle(int x, int y, int circleDiameter) {
+    private StringBuilder drawFinderPattern(int x, int y, int circleDiameter) {
         final int finderInnerCircleDiameter = circleDiameter * 5 / finderPatternSize;
         final int finderDotDiameter = circleDiameter * 3 / finderPatternSize;
         final String OUTER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + onColour + ")' />";

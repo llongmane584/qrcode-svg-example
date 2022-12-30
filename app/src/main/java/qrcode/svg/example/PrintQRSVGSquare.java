@@ -3,48 +3,17 @@ package qrcode.svg.example;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.QRCode;
 
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGSquare {
-    // this output is optimised to 600 (actually, this is an excuse, though :))
-    private static final int CANVAS_SIZE = 600;
-
-    private final String content;
-    private final int qrCodeVersion;
-    private ErrorCorrectionLevel qrCodErrorCorrectionLevel;
-    private final float shapeSizeRatio;
-    private final String fileOutputPath;
-    private final String onColour;
-    private final String offColour;
-    private final int finderPatternSize;
-    private final int quietZoneSize;
-
-    /**
-     * Get QR Code specs from application.properties.
-     */
-    public PrintQRSVGSquare() {
-        ResourceBundle props = ResourceBundle.getBundle("application");
-        this.content = props.getString("qrcode.content");
-        this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
-        this.qrCodErrorCorrectionLevel = ErrorCorrectionLevel.valueOf(props.getString("qrcode.errorCorrectionLevel"));
-        this.shapeSizeRatio = Float.parseFloat(props.getString("qrcode.shapeSizeRatio"));
-        this.fileOutputPath = props.getString("qrcode.fileOutputPath");
-        this.onColour = props.getString("qrcode.onColour");
-        this.offColour = props.getString("qrcode.offColour");
-        this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
-        this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
-    }
-
+public class PrintQRSVGSquare extends PrintQRSVG {
     /**
      * Generate an SVG format QR Code file.
      * @throws Exception
@@ -58,8 +27,8 @@ public class PrintQRSVGSquare {
         StringBuilder svgText = new StringBuilder();
         svgText.append("<?xml version ='1.0'?>" + System.lineSeparator());
         svgText.append("<svg xmlns='http://www.w3.org/2000/svg'>" + System.lineSeparator());
-        // generate SVG format QR Code (circle)
-        svgText.append(renderSquareQRImage(code));
+        // generate SVG format QR Code (sqare)
+        svgText.append(renderQRImage(code));
         svgText.append("</svg>");
         Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + CANVAS_SIZE + "-square.svg"), svgText);
     }
@@ -74,7 +43,7 @@ public class PrintQRSVGSquare {
      * @param code source QR Code
      * @return dot converted SVG format QR Code text
      */
-    private StringBuilder renderSquareQRImage(QRCode code) {
+    private StringBuilder renderQRImage(QRCode code) {
 
         final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
 
@@ -122,16 +91,16 @@ public class PrintQRSVGSquare {
         int y = padding;
 
         StringBuilder finderPatterns = new StringBuilder();
-        finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
+        finderPatterns.append(drawFinderPattern(x, y, squareSideSize));
 
         // top-right
         x = padding + renderingArea - squareSideSize;
-        finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
+        finderPatterns.append(drawFinderPattern(x, y, squareSideSize));
 
         // bottom-left
         x = padding;
         y = padding + renderingArea - squareSideSize;
-        finderPatterns.append(drawFinderPatternSquareStyle(x, y, squareSideSize));
+        finderPatterns.append(drawFinderPattern(x, y, squareSideSize));
 
         qrSvg.append(finderPatterns);
         qrSvg.append(System.lineSeparator());
@@ -150,7 +119,7 @@ public class PrintQRSVGSquare {
      * @param sideSize
      * @return
      */
-    private StringBuilder drawFinderPatternSquareStyle(int x, int y, int sideSize) {
+    private StringBuilder drawFinderPattern(int x, int y, int sideSize) {
         final int finderMiddleSquareWidth = sideSize * 5 / finderPatternSize;
         final int finderInnerSquareWidth = sideSize * 3 / finderPatternSize;
         final String OUTER_SQUARE = "<rect x='$x' y='$y' width='$r' height='$r' fill='rgb(" + onColour + ")' />";
