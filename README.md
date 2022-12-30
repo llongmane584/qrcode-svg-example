@@ -1,4 +1,4 @@
-# ZXing QR Code generation example.
+# ZXing QR Code SVG rendering example.
 ## Description
 Generating QR Code PNG and SVG image by using ZXing.
 
