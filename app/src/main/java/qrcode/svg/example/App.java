@@ -3,14 +3,19 @@
  */
 package qrcode.svg.example;
 
+import qrcode.svg.example.svg.PrintQRSVGCircle;
+import qrcode.svg.example.svg.PrintQRSVGSquare;
+
 public class App {
 
     public static void main(String[] args) {
         try {
             // generate a PNG format QR Code file
             new PrintQR().write();
-            // generate an SVG format QR Code file
-            new PrintQRSVG().write();
+            // generate an SVG format QR Code file (square)
+            new PrintQRSVGSquare().write();
+            // generate an SVG format QR Code file (circle)
+            new PrintQRSVGCircle().write();
         } catch(Exception e) {
             e.printStackTrace();
         }
