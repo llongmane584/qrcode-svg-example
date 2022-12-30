@@ -44,7 +44,7 @@ abstract class PrintQRSVG {
         this.finderPatternSize = Integer.parseInt(props.getString("qrcode.finderPatternSize"));
         this.quietZoneSize = Integer.parseInt(props.getString("qrcode.quietZoneSize"));
 
-        // initialise suffix of output file name from subclass fuffix
+        // initialise suffix of output file name from subclass fuffix (PrintQRSVGCircle -> circle, PrintQRSVGSquare -> square)
         this.fillShape = getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
     }
 
