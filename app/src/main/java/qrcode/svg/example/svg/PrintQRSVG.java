@@ -14,7 +14,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-abstract class PrintQRSVG {
+public abstract class PrintQRSVG {
     // this output is optimised to 600 (actually, this is an excuse, though :))
     protected static final int CANVAS_SIZE = 600;
 
