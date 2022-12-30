@@ -51,7 +51,7 @@ public class PrintQRSVGCircle extends PrintQRSVG {
             for(int x=0; x<qrMatrixSize; ++x) {
                 // fill a cell when the cell colour is on
                 if(qrByteMatrix.get(x, y) == 1) {
-                    // finder pattern cells
+                    // skip rendering finder pattern cells here
                     if(!(
                         ((y >= finderLeftTopYFrom && y <= finderLeftTopYTo)
                         && (x >= finderLeftTopXFrom && x <= finderLeftTopXTo))
@@ -68,7 +68,6 @@ public class PrintQRSVGCircle extends PrintQRSVG {
                             .replace("$r", String.valueOf(fillSize)));
                         cells.append("\n");
                     }
-                    
                 }
             }
         }
