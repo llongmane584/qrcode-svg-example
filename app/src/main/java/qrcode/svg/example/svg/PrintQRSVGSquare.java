@@ -6,18 +6,22 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGSquare extends PrintQRSVG {
+public class PrintQRSVGSquare {
+    private final PrintQRSVG printQrSvg;
+    public PrintQRSVGSquare() {
+        printQrSvg = new PrintQRSVG();
+    }
+
     /**
      * Convert QR Code squares to squares, then generate SVG text of QR Code.
      * 
      * @param code source QR Code
      * @return dot converted SVG format QR Code text
      */
-    @Override
     public StringBuilder renderQRImage(QRCode code) {
-        final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
+        final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + printQrSvg.getOnColour() + ")' fill='rgb(" + printQrSvg.getOnColour() + ")' stroke-width='0' />";
 
-        int padding = quietZoneSize * scaling;
+        int padding = printQrSvg.getQuietZoneSize() * printQrSvg.getScaling();
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
             throw new IllegalStateException();
@@ -27,20 +31,20 @@ public class PrintQRSVGSquare extends PrintQRSVG {
         // Left-Top
         int finderLeftTopXFrom = 0;
         int finderLeftTopYFrom = 0;
-        int finderLeftTopXTo = FINDER_PATTERN_SIZE - 1;
-        int finderLeftTopYTo = FINDER_PATTERN_SIZE - 1;
+        int finderLeftTopXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
+        int finderLeftTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Right-Top
-        int finderRightTopXFrom = qrCodeSize - FINDER_PATTERN_SIZE;
+        int finderRightTopXFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
         int finderRightTopYFrom = 0;
-        int finderRightTopXTo = qrCodeSize - 1;
-        int finderRightTopYTo = FINDER_PATTERN_SIZE - 1;
+        int finderRightTopXTo = printQrSvg.getQrCodeSize() - 1;
+        int finderRightTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Left-Bottom
         int finderLeftBottomXFrom = 0;
-        int finderLeftBottomYFrom = qrCodeSize - FINDER_PATTERN_SIZE;
-        int finderLeftBottomXTo = FINDER_PATTERN_SIZE - 1;
-        int finderLeftBottomYTo = qrCodeSize - 1;
+        int finderLeftBottomYFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
+        int finderLeftBottomXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
+        int finderLeftBottomYTo = printQrSvg.getQrCodeSize() - 1;
 
-        int fillSize = Math.round(scaling * shapeSizeRatio);
+        int fillSize = Math.round(printQrSvg.getScaling() * printQrSvg.getShapeSizeRatio());
         StringBuilder cells = new StringBuilder();
         int qrMatrixSize = qrByteMatrix.getWidth();
         for(int y=0; y<qrMatrixSize; ++y) {
@@ -59,15 +63,15 @@ public class PrintQRSVGSquare extends PrintQRSVG {
                             && (x >= finderLeftBottomXFrom && x <= finderLeftBottomXTo))                      
                     ) {
                         cells.append(CELL
-                        .replace("$x", String.valueOf(x * scaling + padding))
-                        .replace("$y", String.valueOf(y * scaling + padding))
-                        .replace("$r", String.valueOf(scaling)));
+                        .replace("$x", String.valueOf(x * printQrSvg.getScaling() + padding))
+                        .replace("$y", String.valueOf(y * printQrSvg.getScaling() + padding))
+                        .replace("$r", String.valueOf(printQrSvg.getScaling())));
                     }
                     // other cells
                     else {
                         cells.append(CELL
-                            .replace("$x", String.valueOf(x * scaling + padding))
-                            .replace("$y", String.valueOf(y * scaling + padding))
+                            .replace("$x", String.valueOf(x * printQrSvg.getScaling() + padding))
+                            .replace("$y", String.valueOf(y * printQrSvg.getScaling() + padding))
                             .replace("$r", String.valueOf(fillSize)));
                     }
                     cells.append("\n");
@@ -76,5 +80,9 @@ public class PrintQRSVGSquare extends PrintQRSVG {
         }
 
         return cells;
+    }
+
+    public void write(){
+        
     }
 }

@@ -11,29 +11,42 @@ import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.QRCode;
 
+import lombok.Getter;
+
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public abstract class PrintQRSVG {
-    protected static final int FINDER_PATTERN_SIZE = 7; //finderPatternSize = 7;
-    protected static final int QR_SIZE_BASE = 21;
+public class PrintQRSVG {
+    public static final int FINDER_PATTERN_SIZE = 7; //finderPatternSize = 7;
+    public static final int QR_SIZE_BASE = 21;
 
-    protected final String content;
-    protected final int qrCodeVersion;
-    protected ErrorCorrectionLevel qrCodErrorCorrectionLevel;
-    protected final float shapeSizeRatio;
-    protected final String fileOutputPath;
-    protected final String onColour;
-    protected final String offColour;
-    protected final int quietZoneSize;
-    protected final String fillShape;
-    protected final int scaling;
-    protected final int qrCodeSize;
+    @Getter
+    private final String content;
+    @Getter
+    private final int qrCodeVersion;
+    @Getter
+    private ErrorCorrectionLevel qrCodErrorCorrectionLevel;
+    @Getter
+    private final float shapeSizeRatio;
+    @Getter
+    private final String fileOutputPath;
+    @Getter
+    private final String onColour;
+    @Getter
+    private final String offColour;
+    @Getter
+    private final int quietZoneSize;
+    @Getter
+    private final String fillShape;
+    @Getter
+    private final int scaling;
+    @Getter
+    private final int qrCodeSize;
     
     /**
      * Get QR Code specs from application.properties.
      */
-    protected PrintQRSVG() {
+    public PrintQRSVG() {
         ResourceBundle props = ResourceBundle.getBundle("application");
         this.content = props.getString("qrcode.content");
         this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
@@ -50,6 +63,7 @@ public abstract class PrintQRSVG {
         // initialise suffix of output file name from subclass fuffix (PrintQRSVGCircle -> circle, PrintQRSVGSquare -> square)
         this.fillShape = getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
     }
+
 
     /**
      * Generate an SVG format QR Code file.
@@ -74,5 +88,7 @@ public abstract class PrintQRSVG {
         Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + "x" + String.valueOf(scaling) + "-" + fillShape + ".svg"), svgText);
     }
 
-    protected abstract StringBuilder renderQRImage(QRCode code);
+    public StringBuilder renderQRImage(QRCode code){
+        return new StringBuilder();
+    };
 }

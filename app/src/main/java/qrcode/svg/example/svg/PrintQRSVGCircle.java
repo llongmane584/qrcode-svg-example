@@ -6,18 +6,22 @@ import com.google.zxing.qrcode.encoder.QRCode;
 /**
  * Write QR Code as an SVG format text file (.svg).
  */
-public class PrintQRSVGCircle extends PrintQRSVG {
+public class PrintQRSVGCircle{
+    private final PrintQRSVG printQrSvg;
+    public PrintQRSVGCircle() {
+        printQrSvg = new PrintQRSVG();
+    }
+
     /**
      * Convert QR Code squares to squares, then generate SVG text of QR Code.
      * 
      * @param code source QR Code
      * @return dot converted SVG format QR Code text
      */
-    @Override
     public StringBuilder renderQRImage(QRCode code) {
-        final String CELL = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + onColour + ")' fill='rgb(" + onColour + ")' stroke-width='0' />";
+        final String CELL = "<circle cx='$x' cy='$y' r='$r' stroke='rgb(" + printQrSvg.getOnColour() + ")' fill='rgb(" + printQrSvg.getOnColour() + ")' stroke-width='0' />";
 
-        int padding = quietZoneSize * scaling;
+        int padding = printQrSvg.getQuietZoneSize() * printQrSvg.getScaling(); // quietZoneSize * scaling;
         // fine adjustment for circle QR code rendering
         padding *= 1.1;
 
@@ -30,20 +34,20 @@ public class PrintQRSVGCircle extends PrintQRSVG {
         // Left-Top
         int finderLeftTopXFrom = 0;
         int finderLeftTopYFrom = 0;
-        int finderLeftTopXTo = FINDER_PATTERN_SIZE - 1;
-        int finderLeftTopYTo = FINDER_PATTERN_SIZE - 1;
+        int finderLeftTopXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
+        int finderLeftTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Right-Top
-        int finderRightTopXFrom = qrCodeSize - FINDER_PATTERN_SIZE;
+        int finderRightTopXFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
         int finderRightTopYFrom = 0;
-        int finderRightTopXTo = qrCodeSize - 1;
-        int finderRightTopYTo = FINDER_PATTERN_SIZE - 1;
+        int finderRightTopXTo = printQrSvg.getQrCodeSize() - 1;
+        int finderRightTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Left-Bottom
         int finderLeftBottomXFrom = 0;
-        int finderLeftBottomYFrom = qrCodeSize - FINDER_PATTERN_SIZE;
-        int finderLeftBottomXTo = FINDER_PATTERN_SIZE - 1;
-        int finderLeftBottomYTo = qrCodeSize - 1;
+        int finderLeftBottomYFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
+        int finderLeftBottomXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
+        int finderLeftBottomYTo = printQrSvg.getQrCodeSize() - 1;
 
-        int fillSize = Math.round(scaling * shapeSizeRatio / 2);
+        int fillSize = Math.round(printQrSvg.getScaling() * printQrSvg.getShapeSizeRatio() / 2);
         StringBuilder cells = new StringBuilder();
         int qrMatrixSize = qrByteMatrix.getWidth();
         for(int y=0; y<qrMatrixSize; ++y) {
@@ -62,8 +66,8 @@ public class PrintQRSVGCircle extends PrintQRSVG {
                             && (x >= finderLeftBottomXFrom && x <= finderLeftBottomXTo))                      
                     )) {
                         cells.append(CELL
-                            .replace("$x", String.valueOf(x * scaling + padding))
-                            .replace("$y", String.valueOf(y * scaling + padding))
+                            .replace("$x", String.valueOf(x * printQrSvg.getScaling() + padding))
+                            .replace("$y", String.valueOf(y * printQrSvg.getScaling() + padding))
                             .replace("$r", String.valueOf(fillSize)));
                         cells.append("\n");
                     }
@@ -72,37 +76,41 @@ public class PrintQRSVGCircle extends PrintQRSVG {
         }
 
         StringBuilder qrSvg = new StringBuilder();
-        qrSvg.append(drawFinderPattern(padding + (finderLeftTopXFrom + 3) * scaling, padding + (finderLeftTopYFrom + 3) * scaling));
-        qrSvg.append(drawFinderPattern(padding + (finderRightTopXFrom + 3) * scaling, padding + (finderRightTopYFrom + 3) * scaling));
-        qrSvg.append(drawFinderPattern(padding + (finderLeftBottomXFrom + 3) * scaling, padding + (finderLeftBottomYFrom + 3) * scaling));
+        qrSvg.append(drawFinderPattern(padding + (finderLeftTopXFrom + 3) * printQrSvg.getScaling(), padding + (finderLeftTopYFrom + 3) * printQrSvg.getScaling()));
+        qrSvg.append(drawFinderPattern(padding + (finderRightTopXFrom + 3) * printQrSvg.getScaling(), padding + (finderRightTopYFrom + 3) * printQrSvg.getScaling()));
+        qrSvg.append(drawFinderPattern(padding + (finderLeftBottomXFrom + 3) * printQrSvg.getScaling(), padding + (finderLeftBottomYFrom + 3) * printQrSvg.getScaling()));
         return qrSvg.append(cells);
     }
 
     private StringBuilder drawFinderPattern(int x, int y) {
-        final String OUTER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + onColour + ")' />";
-        final String INNER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + offColour + ")' />";
-        final String DOT = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + onColour + ")' />";
+        final String OUTER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + printQrSvg.getOnColour() + ")' />";
+        final String INNER_CIRCLE = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + printQrSvg.getOffColour() + ")' />";
+        final String DOT = "<circle cx='$x' cy='$y' r='$r' fill='rgb(" + printQrSvg.getOnColour() + ")' />";
 
         StringBuilder finderPatterns =  new StringBuilder();
         // draw outer circle
         finderPatterns.append(OUTER_CIRCLE
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(FINDER_PATTERN_SIZE * scaling / 2)) + "\n"
+            .replace("$r", String.valueOf(PrintQRSVG.FINDER_PATTERN_SIZE * printQrSvg.getScaling() / 2)) + "\n"
             );
         // draw inner circle
         finderPatterns.append(INNER_CIRCLE
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(5 * scaling / 2)) + "\n"
+            .replace("$r", String.valueOf(5 * printQrSvg.getScaling() / 2)) + "\n"
             );
         // draw dot
         finderPatterns.append(DOT
             .replace("$x", String.valueOf(x))
             .replace("$y", String.valueOf(y))
-            .replace("$r", String.valueOf(3 * scaling / 2)) + "\n"
+            .replace("$r", String.valueOf(3 * printQrSvg.getScaling() / 2)) + "\n"
             );
 
         return finderPatterns;
+    }
+
+    public void write(){
+        
     }
 }
