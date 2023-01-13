@@ -5,13 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.QRCode;
-
-import lombok.Getter;
 
 /**
  * Write QR Code as an SVG format text file (.svg).
@@ -20,33 +19,22 @@ public class PrintQRSVG {
     public static final int FINDER_PATTERN_SIZE = 7; //finderPatternSize = 7;
     public static final int QR_SIZE_BASE = 21;
 
-    @Getter
-    private final String content;
-    @Getter
-    private final int qrCodeVersion;
-    @Getter
-    private ErrorCorrectionLevel qrCodErrorCorrectionLevel;
-    @Getter
-    private final float shapeSizeRatio;
-    @Getter
-    private final String fileOutputPath;
-    @Getter
-    private final String onColour;
-    @Getter
-    private final String offColour;
-    @Getter
-    private final int quietZoneSize;
-    @Getter
-    private final String fillShape;
-    @Getter
-    private final int scaling;
-    @Getter
-    private final int qrCodeSize;
+    public final String content;
+    public final int qrCodeVersion;
+    public ErrorCorrectionLevel qrCodErrorCorrectionLevel;
+    public final float shapeSizeRatio;
+    public final String fileOutputPath;
+    public final String onColour;
+    public final String offColour;
+    public final int quietZoneSize;
+    public final String cellShape;
+    public final int scaling;
+    public final int qrCodeSize;
     
     /**
      * Get QR Code specs from application.properties.
      */
-    public PrintQRSVG() {
+    public PrintQRSVG(String cellShape) {
         ResourceBundle props = ResourceBundle.getBundle("application");
         this.content = props.getString("qrcode.content");
         this.qrCodeVersion =  Integer.parseInt(props.getString("qrcode.version"));
@@ -61,7 +49,7 @@ public class PrintQRSVG {
         this.qrCodeSize = QR_SIZE_BASE + (qrCodeVersion - 1) * 4;
 
         // initialise suffix of output file name from subclass fuffix (PrintQRSVGCircle -> circle, PrintQRSVGSquare -> square)
-        this.fillShape = getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
+        this.cellShape = cellShape; //getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase();
     }
 
 
@@ -69,7 +57,7 @@ public class PrintQRSVG {
      * Generate an SVG format QR Code file.
      * @throws Exception
      */
-    public void write() throws Exception {
+    public void write(Function<QRCode, StringBuilder> renderer) throws Exception {
         final ConcurrentHashMap<EncodeHintType, Object> hints = new ConcurrentHashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.name());
         hints.put(EncodeHintType.QR_VERSION, qrCodeVersion);
@@ -83,12 +71,9 @@ public class PrintQRSVG {
         svgText.append("<rect id='background' x='0' y='0' width='" + String.valueOf(canvasSize) + "' height='" + String.valueOf(canvasSize) + "' stroke='rgb(" + offColour + ")' fill='rgb(" + offColour + ")' stroke-width='2' />");
         svgText.append("\n");
         // draw QR Code content
-        svgText.append(renderQRImage(code));
+        //svgText.append(renderQRImage(code));
+        svgText.append(renderer.apply(code));
         svgText.append("</svg>");
-        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + "x" + String.valueOf(scaling) + "-" + fillShape + ".svg"), svgText);
+        Files.writeString(Paths.get(fileOutputPath + qrCodeVersion + "-" + "x" + String.valueOf(scaling) + "-" + cellShape + ".svg"), svgText);
     }
-
-    public StringBuilder renderQRImage(QRCode code){
-        return new StringBuilder();
-    };
 }

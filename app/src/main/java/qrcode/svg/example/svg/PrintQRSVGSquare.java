@@ -9,7 +9,7 @@ import com.google.zxing.qrcode.encoder.QRCode;
 public class PrintQRSVGSquare {
     private final PrintQRSVG printQrSvg;
     public PrintQRSVGSquare() {
-        printQrSvg = new PrintQRSVG();
+        printQrSvg = new PrintQRSVG(getClass().getSimpleName().replace(getClass().getSuperclass().getSimpleName(), "").toLowerCase());
     }
 
     /**
@@ -19,9 +19,9 @@ public class PrintQRSVGSquare {
      * @return dot converted SVG format QR Code text
      */
     public StringBuilder renderQRImage(QRCode code) {
-        final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + printQrSvg.getOnColour() + ")' fill='rgb(" + printQrSvg.getOnColour() + ")' stroke-width='0' />";
+        final String CELL = "<rect x='$x' y='$y' width='$r' height='$r' stroke='rgb(" + printQrSvg.onColour + ")' fill='rgb(" + printQrSvg.onColour + ")' stroke-width='0' />";
 
-        int padding = printQrSvg.getQuietZoneSize() * printQrSvg.getScaling();
+        int padding = printQrSvg.quietZoneSize * printQrSvg.scaling;
         ByteMatrix qrByteMatrix = code.getMatrix();
         if (qrByteMatrix == null) {
             throw new IllegalStateException();
@@ -34,17 +34,17 @@ public class PrintQRSVGSquare {
         int finderLeftTopXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         int finderLeftTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Right-Top
-        int finderRightTopXFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
+        int finderRightTopXFrom = printQrSvg.qrCodeSize - PrintQRSVG.FINDER_PATTERN_SIZE;
         int finderRightTopYFrom = 0;
-        int finderRightTopXTo = printQrSvg.getQrCodeSize() - 1;
+        int finderRightTopXTo = printQrSvg.qrCodeSize - 1;
         int finderRightTopYTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
         // Left-Bottom
         int finderLeftBottomXFrom = 0;
-        int finderLeftBottomYFrom = printQrSvg.getQrCodeSize() - PrintQRSVG.FINDER_PATTERN_SIZE;
+        int finderLeftBottomYFrom = printQrSvg.qrCodeSize - PrintQRSVG.FINDER_PATTERN_SIZE;
         int finderLeftBottomXTo = PrintQRSVG.FINDER_PATTERN_SIZE - 1;
-        int finderLeftBottomYTo = printQrSvg.getQrCodeSize() - 1;
+        int finderLeftBottomYTo = printQrSvg.qrCodeSize - 1;
 
-        int fillSize = Math.round(printQrSvg.getScaling() * printQrSvg.getShapeSizeRatio());
+        int fillSize = Math.round(printQrSvg.scaling * printQrSvg.shapeSizeRatio);
         StringBuilder cells = new StringBuilder();
         int qrMatrixSize = qrByteMatrix.getWidth();
         for(int y=0; y<qrMatrixSize; ++y) {
@@ -63,15 +63,15 @@ public class PrintQRSVGSquare {
                             && (x >= finderLeftBottomXFrom && x <= finderLeftBottomXTo))                      
                     ) {
                         cells.append(CELL
-                        .replace("$x", String.valueOf(x * printQrSvg.getScaling() + padding))
-                        .replace("$y", String.valueOf(y * printQrSvg.getScaling() + padding))
-                        .replace("$r", String.valueOf(printQrSvg.getScaling())));
+                        .replace("$x", String.valueOf(x * printQrSvg.scaling + padding))
+                        .replace("$y", String.valueOf(y * printQrSvg.scaling + padding))
+                        .replace("$r", String.valueOf(printQrSvg.scaling)));
                     }
                     // other cells
                     else {
                         cells.append(CELL
-                            .replace("$x", String.valueOf(x * printQrSvg.getScaling() + padding))
-                            .replace("$y", String.valueOf(y * printQrSvg.getScaling() + padding))
+                            .replace("$x", String.valueOf(x * printQrSvg.scaling + padding))
+                            .replace("$y", String.valueOf(y * printQrSvg.scaling + padding))
                             .replace("$r", String.valueOf(fillSize)));
                     }
                     cells.append("\n");
@@ -82,7 +82,11 @@ public class PrintQRSVGSquare {
         return cells;
     }
 
-    public void write(){
-        
+    /**
+     * 
+     * @throws Exception
+     */
+    public void write() throws Exception {
+        printQrSvg.write(this::renderQRImage);
     }
 }
